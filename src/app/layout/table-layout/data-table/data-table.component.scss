@@ -1,0 +1,19 @@
+// .paginate-buttons.handset_portrait,
+// .paginate-buttons.handset_landscape,
+// .paginate-buttons.tablet-portrait {
+// 	justify-content: centre;
+// }
+
+.table-wrapper.handset_portrait,
+.table-wrapper.handset_landscape,
+.table-wrapper.tablet_portrait {
+	align-items: center !important;
+}
+p-table {
+	display: block;
+	min-width: 100%;
+}
+.table-wrapper > .card {
+	width: -webkit-fill-available;
+	width: 100%;
+}

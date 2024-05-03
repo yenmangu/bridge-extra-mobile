@@ -1,0 +1,157 @@
+<!--
+	Need to make component for
+	- Paginate buttons
+	- Filter and Search
+ -->
+
+<div
+	class="table-wrapper flex flex-column justify-content-start"
+	[ngClass]="currentBP.key">
+	<div
+		class="flex justify-content-center mb-3"
+		*ngIf="selectedSize">
+		<p-selectButton
+			[options]="constants.sizes"
+			optionLabel="name"
+			optionValue="class"
+			[(ngModel)]="selectedSize.class"
+			[multiple]="false"
+			[unselectable]="true"></p-selectButton>
+	</div>
+	<div
+		pElement
+		class="flex paginate-buttons"
+		[ngClass]="currentBP.key">
+		<p-button
+			type="button"
+			icon="pi pi-chevron-left"
+			styleClass="p-button-text"
+			(click)="prev()"
+			[disabled]="isFirstPage()"></p-button>
+		<p-button
+			type="button"
+			icon="pi pi-refresh"
+			styleClass="p-button-text"
+			(click)="reset()"></p-button>
+		<p-button
+			type="button"
+			icon="pi pi-chevron-right"
+			styleClass="p-button-text"
+			(click)="next()"
+			[disabled]="isLastPage()"></p-button>
+	</div>
+	<div
+		class="card"
+		*ngIf="tableData && tableData.length">
+		<p-table
+			#t_1
+			selectionMode="single"
+			[styleClass]="getStyleClass()"
+			[columns]="tableCols"
+			[value]="tableData"
+			[paginator]="true"
+			[rows]="visibleRows"
+			[first]="first"
+			[showCurrentPageReport]="true"
+			currentPageReportTemplate="Showing {last} of {totalRecords}"
+			[scrollable]="setScrollBehaviour().scrollable"
+			[virtualScroll]="setScrollBehaviour().virtualScroll"
+			(onRowSelect)="getRowData($event)"
+			(onPage)="pageChange($event)"
+			[rowsPerPageOptions]="rowsPerPageOptions">
+			<ng-template pTemplate="caption">
+				<div class="flex flex-column align-items-center w-full">
+					<h3>{{ tableConfig.tableName | removeDate }}</h3>
+					<div class="flex w-full">
+						<button
+							pButton
+							class="p-button-outlined"
+							label="Clear"
+							icon="pi pi-filter-slash"
+							(click)="clear(t_1)"></button>
+						<span class="p-input-icon-left ml-auto">
+							<i class="pi pi-search"></i>
+							<input
+								#searchInput
+								pInputText
+								type="text"
+								placeholder="Search"
+								(keyup)="filterTable($event)" />
+						</span>
+					</div>
+				</div>
+			</ng-template>
+			<ng-template
+				pTemplate="header"
+				let-columns>
+				<tr>
+					<th
+						*ngFor="let col of columns"
+						[pSortableColumn]="col.field"
+						[ngClass]="selectedSize.font">
+						{{ col.header | mapHeaders }}
+						<p-sortIcon [field]="col.field"></p-sortIcon>
+					</th>
+				</tr>
+			</ng-template>
+			<ng-template
+				pTemplate="body"
+				let-rowData
+				let-columns="columns">
+				<tr>
+					<td
+						*ngFor="let col of columns"
+						[ngClass]="selectedSize.font"
+						(mouseover)="onRowHover(rowData, col, true)"
+						(mouseout)="onRowHover(rowData, col, false)"
+						[pTooltip]="getTooltip(rowData)">
+						<ng-container *ngIf="tablesService.truncColumn(col.field)">
+							<div
+								class="inner"
+								[ngClass]="
+									tablesService.areCellsClickable(
+										tableConfig.dataTypeString,
+										col.header
+									)
+										? 'cursor-pointer'
+										: ''
+								"
+								appClickHandler
+								(clickEvent)="handleClick($event, rowData, col)">
+								{{ rowData[col.field] | removeDate | truncate : 26 }}
+							</div>
+						</ng-container>
+						<ng-container *ngIf="!tablesService.truncColumn(col.field)">
+							<div
+								class="inner"
+								[ngClass]="
+									tablesService.areCellsClickable(
+										tableConfig.dataTypeString,
+										col.header
+									)
+										? 'cursor-pointer'
+										: ''
+								"
+								appClickHandler
+								(clickEvent)="handleClick($event, rowData, col)">
+								{{ rowData[col.field] }}
+							</div>
+						</ng-container>
+					</td>
+				</tr>
+			</ng-template>
+		</p-table>
+	</div>
+</div>
+<!-- Debugging -->
+<!-- {{ tableData[0] | json }} -->
+<!-- Tooltip template -->
+<ng-template
+	#tooltip
+	let-data>
+	<ng-container *ngIf="rowData">
+		<div *appPassDataToTemplate="{rowData, colData}">
+			{{ rowData[colData.field] }}
+		</div>
+	</ng-container>
+</ng-template>

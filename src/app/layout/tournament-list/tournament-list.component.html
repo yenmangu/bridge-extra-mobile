@@ -1,0 +1,127 @@
+<div
+	class="table-wrapper flex flex-column justify-content-start"
+	[ngClass]="currentBP.key">
+	<div class="flex justify-content-center mb-3">
+		<p-selectButton
+			[options]="sizes"
+			optionLabel="name"
+			optionValue="class"
+			[ngModel]="selectedSize.class"
+			[multiple]="false"
+			(ngModelChange)="changeSize($event)"></p-selectButton>
+	</div>
+	<div
+		pElement
+		class="flex paginate-buttons"
+		[ngClass]="currentBP.key">
+		<p-button
+			type="button"
+			icon="pi pi-chevron-left"
+			styleClass="p-button-text"
+			(click)="prev()"
+			[disabled]="isFirstPage()"></p-button>
+		<p-button
+			type="button"
+			icon="pi pi-refresh"
+			styleClass="p-button-text"
+			(click)="reset()"></p-button>
+		<p-button
+			type="button"
+			icon="pi pi-chevron-right"
+			styleClass="p-button-text"
+			(click)="next()"
+			[disabled]="isLastPage()"></p-button>
+	</div>
+	<div
+		*ngIf="tableData && tableData.length > 1"
+		class="card">
+		<p-table
+			#t1
+			[styleClass]="getStyleClass()"
+			[paginator]="true"
+			[rows]="visibleRows"
+			[first]="first"
+			[scrollable]="setScrollBehaviour().scrollable"
+			[virtualScroll]="setScrollBehaviour().virtualScroll"
+			[rowsPerPageOptions]="[10, 20, 40, 100, getAllRows()]"
+			[showCurrentPageReport]="true"
+			currentPageReportTemplate="Showing {last} of {totalRecords}"
+			[showPageLinks]="showPageLinks()"
+			[columns]="tableCols"
+			[value]="tableData"
+			selectionMode="single"
+			(onRowSelect)="getRowData($event)"
+			(onPage)="pageChange($event)"
+			[ngClass]="currentBP.key">
+			<ng-template pTemplate="caption">
+				<div class="flex">
+					<button
+						pButton
+						label="Clear"
+						class="p-button-outlined"
+						icon="pi pi-filter-slash"
+						(click)="clear(t1)"></button>
+					<span class="p-input-icon-left ml-auto">
+						<i class="pi pi-search"></i>
+						<input
+							#searchInput
+							pInputText
+							type="text"
+							(keyup)="filterTable($event)"
+							placeholder="Search" />
+					</span>
+				</div>
+			</ng-template>
+			<ng-template
+				pTemplate="header"
+				let-columns>
+				<tr>
+					<th
+						*ngFor="let col of columns"
+						[pSortableColumn]="col.field"
+						[ngClass]="selectedSize.font">
+						{{ col.header | mapHeaders }}
+						<p-sortIcon [field]="col.field"></p-sortIcon>
+					</th>
+				</tr>
+			</ng-template>
+			<ng-template
+				pTemplate="body"
+				let-rowData
+				let-columns="columns">
+				<tr
+					[pSelectableRow]="rowData"
+					class="p-selectable-row">
+					<td
+						*ngFor="let col of columns"
+						[ngClass]="selectedSize.font"
+						(mouseover)="onRowHover(rowData, col, true)"
+						(mouseout)="onRowHover(rowData, col, false)"
+						[pTooltip]="getTooltip(rowData)">
+						<ng-container *ngIf="shouldTruncate(col.field)">{{
+							rowData[col.field] | removeDate | truncate : 26
+						}}</ng-container>
+						<ng-container *ngIf="!shouldTruncate(col.field)">{{
+							rowData[col.field]
+						}}</ng-container>
+
+						<!-- {{ rowData[col.field] | removeDate }} -->
+					</td>
+				</tr>
+			</ng-template>
+		</p-table>
+	</div>
+</div>
+
+<!-- <ng-container
+	*ngTemplateOutlet="tooltip; context: { $implicit: selectedRow }"></ng-container> -->
+
+<ng-template
+	#tooltip
+	let-data>
+	<ng-container *ngIf="rowData">
+		<div *appPassDataToTemplate="{rowData, colData}">
+			{{ rowData[colData.field] }}
+		</div>
+	</ng-container>
+</ng-template>

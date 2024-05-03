@@ -1,0 +1,6 @@
+:host ::ng-deep {
+	.test div.p-selectbutton.p-buttonset.p-component {
+		display: flex !important;
+		border: 2ps solid black;
+	}
+}

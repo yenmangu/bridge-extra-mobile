@@ -1,0 +1,11 @@
+<p-progressSpinner
+	*ngIf="!tableReady"
+	ariaLabel="loading"></p-progressSpinner>
+<app-tournament-list
+	[tableData]="tournamentData"
+	[tableConfig]="tableConfig"
+	(rowSelected)="onTournamentReceive($event)"
+	*ngIf="tableReady"></app-tournament-list>
+<ng-container *ngIf="tableReady && tournamentData.length === 0">
+	<span>No tournament data available.</span>
+</ng-container>

@@ -1,0 +1,14 @@
+<div class="header">
+	<h1>BridgeExtra</h1>
+</div>
+<p-menubar [model]="items">
+	<ng-template pTemplate="end">
+		<app-paginate></app-paginate>
+	</ng-template>
+</p-menubar>
+<p-menubar>
+	<ng-template pTemplate="start">
+		<h3>Table Controls</h3>
+	</ng-template>
+	<app-paginate></app-paginate>
+</p-menubar>

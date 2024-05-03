@@ -1,0 +1,16 @@
+<div class="flex flex-column justify-content-end p-3 gap-3">
+	<h4>Tournament: {{ selectedRow.torneo }}</h4>
+	<span>Date: {{ selectedRow.Data }}</span>
+	<div class="flex flex-row gap-3">
+		<p-button
+			class="p-button-success"
+			severity="success"
+			label="See Details"
+			(click)="closeWithConfirm()"></p-button>
+		<p-button
+			class="p-button-success"
+			severity="secondary"
+			label="Back to list"
+			(click)="cancel()"></p-button>
+	</div>
+</div>

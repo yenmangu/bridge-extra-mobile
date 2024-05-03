@@ -1,0 +1,38 @@
+<div class="flex flex-row justify-content-end test">
+	<div class="flex justify-content-center">
+		<p-selectButton
+			id="paginateHeader"
+			class="header-paginate"
+			[options]="tableService.sizes"
+			optionLabel="name"
+			optionValue="class"
+			[(ngModel)]="selectedSize.class"
+			[multiple]="false"
+			[unselectable]="true"
+			[disabled]="sizeControlsDisabled">
+		</p-selectButton>
+	</div>
+	<!-- <div
+		class="flex paginate-buttons w-full"
+		pElement>
+		<p-button
+			#prev
+			type="button"
+			icon="pi pi-chevron-left"
+			styleClass="p-button-text"
+			(click)="onPrev()"
+			[disabled]="prevButtonDisabled"></p-button>
+		<p-button
+			type="button"
+			icon="pi pi-refresh"
+			styleClass="p-button-text"
+			(click)="onReset()"></p-button>
+		<p-button
+			#next
+			type="button"
+			icon="pi pi-chevron-right"
+			styleClass="p-button-text"
+			(click)="onNext()"
+			[disabled]="nextButtonDisabled"></p-button>
+	</div> -->
+</div>
