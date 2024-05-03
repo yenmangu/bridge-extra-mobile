@@ -65,33 +65,17 @@
 	},
 	"TOURNAMENTS",
 	{
-		"header": "Tournament",
-		"width": "360px",
+		"header": "Tournament Information",
+		"width": "320px",
 		"closeOnEscape": true,
 		"modal": true,
 		"dismissableMask": true,
 		"data": {
-			"singleEntry": true,
-			"rowData": {
-				"Circuito": "Open",
-				"Torneo": "2019 Jewish Care Friendly Duplicate",
-				"Giocatore": "Walsingham-Carole Raven",
-				"Giocatore1": "jenjen37-Jenifer Rosenberg",
-				"Media": 67.03,
-				"MP": null,
+			"selectedRow": {
+				"torneo": "2019 Jewish Care Friendly Duplicate",
+				"circuito": "Open",
+				"Swiss": "N",
 				"Data": "2019-11-25"
-			},
-			"colData": {
-				"field": "Torneo",
-				"header": "Torneo"
-			},
-			"tableConfig": {
-				"dataTypeString": "WinnersData",
-				"tableName": "Winners Data",
-				"visibleRows": 10,
-				"rowsPerPage": [5, 10, 15, 20],
-				"extraClasses": ["p-datatable-striped"],
-				"minWidth": ""
 			}
 		}
 	}
