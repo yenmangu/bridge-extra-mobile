@@ -5,6 +5,7 @@ import { JsonPipe, NgIf } from '@angular/common';
 import { WinnersData } from '../shared/interfaces/winners-data';
 import { TableConfig } from '../shared/interfaces/table-details';
 import { baseTableConfig } from '../shared/data/base-table-config';
+import { RoutingService } from '../shared/services/routing.service';
 
 @Component({
 	selector: 'app-winners',
@@ -16,7 +17,10 @@ import { baseTableConfig } from '../shared/data/base-table-config';
 export class WinnersComponent implements OnInit {
 	winnersData: WinnersData[] = [];
 	tableConfig: TableConfig = baseTableConfig;
-	constructor(private httpService: HttpService) {}
+	constructor(
+		private httpService: HttpService,
+		private routingService: RoutingService
+	) {}
 
 	ngOnInit(): void {
 		this.getWinnersData();
@@ -39,5 +43,19 @@ export class WinnersComponent implements OnInit {
 	setTableConfig() {
 		this.tableConfig.dataTypeString = 'WinnersData';
 		this.tableConfig.tableName = 'Winners Data';
+	}
+
+	onReceiveRowData(event: any) {
+		console.log('OnReceiveRowData initiated');
+		console.log('Event: ', event);
+		if (event.type) {
+			if (event.type === 'playerDetails') {
+				const playerName: string = event.selectedCell.data;
+				console.log('Player name: ', playerName);
+				this.routingService.handlePlayerDetailsRouting(playerName);
+			}
+		} else {
+			console.error('Error reacting to event');
+		}
 	}
 }

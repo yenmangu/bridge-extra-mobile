@@ -7,6 +7,10 @@ import { headerMappings } from '../shared/data/header.mappings';
 })
 export class MapHeadersPipe implements PipeTransform {
 	transform(headerString: string): string {
+		if (!headerString) {
+			return headerString;
+		}
+
 		return headerMappings[headerString] || headerString;
 	}
 }

@@ -9,6 +9,7 @@ import {
 	EventEmitter,
 	Output
 } from '@angular/core';
+import { Subject, distinctUntilChanged, takeUntil } from 'rxjs';
 import {
 	TableModule,
 	Table,
@@ -40,7 +41,7 @@ import {
 } from 'src/app/shared/interfaces/table-details';
 import { MapHeadersPipe } from 'src/app/pipes/map-headers.pipe';
 import { TableSizeService } from 'src/app/shared/services/table-size.service';
-
+import { ConstantsService } from 'src/app/shared/services/constants.service';
 @Component({
 	selector: 'app-tournament-list',
 	templateUrl: './tournament-list.component.html',
@@ -105,20 +106,23 @@ export class TournamentListComponent implements OnInit, AfterViewInit {
 			.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
 			.join(' ');
 	}
+	private ngUnsubscribe = new Subject<void>();
 
 	constructor(
 		private breakpointsService: BreakpointsService,
 		private dialog: DialogService, // private dialogRef: DynamicDialogRef,
-		private tableSizeService: TableSizeService
+		private tableSizeService: TableSizeService,
+		private constansts: ConstantsService
 	) {
-		this.sizes = [];
-		this.sizes.push({ name: 'Small', class: 'p-datatable-sm', font: 'text-sm' });
-		this.sizes.push({ name: 'Normal', class: '', font: '' });
-		this.sizes.push({ name: 'Large', class: 'p-datatable-lg', font: 'text-lg' });
-		this.selectedSize = { name: 'Normal', class: '', font: '' };
+		// this.sizes = [];
+		// this.sizes.push({ name: 'Small', class: 'p-datatable-sm', font: 'text-sm' });
+		// this.sizes.push({ name: 'Normal', class: '', font: '' });
+		// this.sizes.push({ name: 'Large', class: 'p-datatable-lg', font: 'text-lg' });
+		// this.selectedSize = { name: 'Normal', class: '', font: '' };
 	}
 
 	ngOnInit(): void {
+		this.sizes = this.constansts.sizes;
 		this.breakpointsService.activeBreakpoint$.subscribe(bp => {
 			this.currentBP = bp;
 		});
@@ -133,6 +137,12 @@ export class TournamentListComponent implements OnInit, AfterViewInit {
 			this.pageLinksVisible = true;
 		}
 		this.tableSizeService.setDisabled(false);
+
+		this.tableSizeService.selectedSize$
+			.pipe(takeUntil(this.ngUnsubscribe), distinctUntilChanged())
+			.subscribe(size => {
+				this.selectedSize = size;
+			});
 
 		if (this.tableData && this.tableData.length > 0) {
 			this.assignHeadersAndCols();
@@ -198,10 +208,9 @@ export class TournamentListComponent implements OnInit, AfterViewInit {
 	changeSize(event: SelectButtonChangeEvent) {
 		// Clear current selection to avoid conflictions
 		this.selectedSize = undefined;
-		console.log('Event: ', event);
 		// Because using (ngModelChange)
 		this.selectedSize = this.sizes.find(size => size.class === event);
-		console.log('New Selected Size: ', this.selectedSize);
+		this.tableSizeService.setSelectedSize(this.selectedSize);
 	}
 
 	clear(table: Table) {
@@ -253,14 +262,23 @@ export class TournamentListComponent implements OnInit, AfterViewInit {
 	}
 
 	openDialog() {
+		const config: any = {
+			colData: this.colData,
+			rowData: this.rowData
+		};
+		if (this.colData.field === 'torneo') {
+			config.showExtended = true;
+		}
 		this.dialogRef = this.dialog.open(TableDialogComponent, {
 			header: 'Tournament Information',
-			width: '320px',
+			width: '360px',
 			closeOnEscape: true,
 			modal: true,
 			dismissableMask: true,
 			data: {
-				selectedRow: this.selectedRow
+				tableConfig: this.tableConfig,
+				selectedRow: this.selectedRow,
+				config
 			}
 		});
 		// if (this.dialogRef) {
@@ -284,6 +302,14 @@ export class TournamentListComponent implements OnInit, AfterViewInit {
 		const options = {
 			rowSelected: this.selectedRow,
 			rank: type === 'rank' ? true : undefined,
+			type:
+				type === 'rank'
+					? 'rank'
+					: type === 'scores'
+					? 'scores'
+					: type === 'playerDetails'
+					? 'playerdetails'
+					: 'undefined',
 			scores: type === 'scores' ? true : undefined
 		};
 		console.log('Open Selected Initiated');

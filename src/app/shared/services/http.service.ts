@@ -67,4 +67,10 @@ export class HttpService {
 
 		return this.http.get(`${this.apiUrl}/database/tournament-scores`, { params });
 	}
+
+	reqPlayerData(playerName: string): Observable<any> {
+		let params = new HttpParams();
+		params.set('player', playerName);
+		return this.http.get(`${this.apiUrl}/database/players`, { params });
+	}
 }

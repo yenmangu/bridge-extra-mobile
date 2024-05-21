@@ -20,20 +20,30 @@ export class ConstantsService {
 	public intCols: string[] = ['Posiz', 'score', 'Coppia'];
 	public floatCols: string[] = ['Media', 'MP2', 'NS', 'EW'];
 	public capsCol: string[] = ['MP2'];
+	public showExtendedDialogCols: string[] = ['torneo', 'Torneo'];
 
-	public clickableTables: string[] = ['TournamentDetails', 'WinnersData'];
+	public clickableTables: string[] = [
+		'TournamentDetails',
+		'WinnersData',
+		'allPlayers'
+	];
 	public clickableCells: string[] = [
 		'Giocatore',
 		'Giocatore1',
 		'circuito',
 		'Torneo'
 	];
-	public singleEntryDialogs: string[] = ['TournamentDetails', 'WinnersData'];
+	public singleEntryDialogs: string[] = [
+		'TournamentDetails',
+		'WinnersData',
+		'allPlayers'
+	];
 
 	public sizes: TableSize[] = [
-		{ name: 'Small', class: 'p-datatable-sm', font: 'text-sm' },
-		{ name: 'Normal', class: '', font: '' },
-		{ name: 'Large', class: 'p-datatable-lg', font: 'text-lg' }
+		{ name: 'Small', class: 'p-datatable-sm', font: 'text-xs' },
+		{ name: 'Normal', class: '', font: 'text-sm' },
+		{ name: 'Large', class: 'p-datatable-lg', font: 'text-base' },
+		{ name: 'Larger', class: 'p-datatable-xl', font: 'text-lg' }
 	];
 
 	public paginateOptions: PaginateOption[] = [
@@ -42,9 +52,5 @@ export class ConstantsService {
 		PaginateOption.Next
 	];
 
-	constructor(private tableSizeService: TableSizeService) {}
-
-	get tableSizes() {
-		return this.tableSizeService.selectedSize$;
-	}
+	constructor() {}
 }

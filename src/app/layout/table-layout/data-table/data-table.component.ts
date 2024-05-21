@@ -19,10 +19,12 @@ import {
 import { SelectButtonModule, SelectButtonChangeEvent } from 'primeng/selectbutton';
 
 import { MapHeadersPipe } from '../../../pipes/map-headers.pipe';
-import { TournamentDetails } from '../../../shared/interfaces/tournament-details';
+import { RemovePlayerCodePipe } from 'src/app/pipes/remove-player-code.pipe';
+import { TwoDecimalPlacesPipe } from 'src/app/pipes/two-decimal-places.pipe';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { TruncatePipe } from '../../../pipes/truncate.pipe';
+import { NullConversionPipe } from 'src/app/pipes/null-conversion.pipe';
 import { FormsModule } from '@angular/forms';
 import { JsonPipe, NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -45,7 +47,6 @@ import { TablePaginateService } from 'src/app/shared/services/table-paginate.ser
 import { PaginateOption } from 'src/app/shared/interfaces/paginate-options';
 import { SingleEntryDialogComponent } from 'src/app/shared/dialogs/single-entry-dialog/single-entry-dialog.component';
 import { DialogConfigService } from 'src/app/shared/services/dialog-config.service';
-
 @Component({
 	selector: 'app-data-table',
 	standalone: true,
@@ -57,6 +58,9 @@ import { DialogConfigService } from 'src/app/shared/services/dialog-config.servi
 		JsonPipe,
 		removeDatePipe,
 		MapHeadersPipe,
+		TwoDecimalPlacesPipe,
+		NullConversionPipe,
+		RemovePlayerCodePipe,
 		TruncatePipe,
 		TableModule,
 		TableDialogComponent,
@@ -92,16 +96,19 @@ export class DataTableComponent<T> implements OnInit, OnDestroy {
 	visibleRows: number = 10;
 	first: number = 0;
 	rowsPerPageOptions: any[];
-
+	sizes: TableSize[];
 	selectedSize: TableSize;
 
 	selectedRow: T | undefined;
+	selectedCell: any;
 
 	rowData: T | undefined;
 	colData: Column | undefined;
 
 	prevButtonDisabled: boolean = true;
 	nextButtonDisabled: boolean = false;
+
+	allPlayers: boolean = false;
 
 	// public sizes: TableSize[] = [
 	// 	{ name: 'Small', class: 'p-datatable-sm', font: 'text-sm' },
@@ -126,6 +133,7 @@ export class DataTableComponent<T> implements OnInit, OnDestroy {
 	) {}
 
 	ngOnInit(): void {
+		this.sizes = this.constants.sizes;
 		this.breakpointsService.activeBreakpoint$.subscribe(
 			bp => (this.currentBP = bp)
 		);
@@ -143,6 +151,9 @@ export class DataTableComponent<T> implements OnInit, OnDestroy {
 			this.tablesService.mapFieldVals(this.tableData);
 		}
 		this.setConfig();
+		if (this.tableConfig) {
+			this.setAllPlayers();
+		}
 
 		this.tablePaginate.prevDisabled$
 			.pipe(takeUntil(this.ngUnsubscribe))
@@ -181,8 +192,18 @@ export class DataTableComponent<T> implements OnInit, OnDestroy {
 			.pipe(takeUntil(this.ngUnsubscribe), distinctUntilChanged())
 			.subscribe(size => {
 				this.selectedSize = size;
+				console.log('Selected Size: ', this.selectedSize);
+
 				// console.log('data-table component subscription: ', this.selectedSize);
 			});
+	}
+
+	public changeSize(event: SelectButtonChangeEvent) {
+		console.log('Invoking change size with: ', event);
+
+		this.selectedSize = undefined;
+		this.selectedSize = this.sizes.find(e => e.class === event);
+		this.tableSizeService.setSelectedSize(this.selectedSize);
 	}
 
 	public clear(table: Table) {
@@ -198,7 +219,9 @@ export class DataTableComponent<T> implements OnInit, OnDestroy {
 	}
 
 	public getStyleClass() {
-		return `${this.selectedSize.class} ${this.extraClasses.join(' ')}`;
+		const styleClass = `${this.selectedSize.class} ${this.extraClasses.join(' ')}`;
+		// console.log('StyleClass: ', styleClass);
+		return styleClass;
 	}
 
 	public getTooltip(rowData): TemplateRef<any> {
@@ -219,15 +242,35 @@ export class DataTableComponent<T> implements OnInit, OnDestroy {
 			)
 		) {
 			console.log('rowData: ', rowData);
+			this.selectedRow = rowData;
+			this.selectedCell = { header: colData.header, data: rowData[colData.header] };
+			console.log('Testing header: ', colData.header);
 
 			const dialogConfig: any = {
 				header: this.dialogConfigService.getheader(colData.header),
 				rowData,
-				colData,
+
 				singleEntry: this.dialogConfigService.isSingleEntry(
 					this.tableConfig.dataTypeString
 				)
 			};
+			if (this.constants.showExtendedDialogCols.includes(colData.header)) {
+				console.log('Setting showExtended: true');
+
+				dialogConfig.showExtended = true;
+				console.log('Dialog config: ', dialogConfig);
+			}
+			if (
+				this.allPlayers &&
+				colData.field === 'giocatore' &&
+				colData.header === 'Giocatore'
+			) {
+				const column: Column = { field: 'player', header: 'Player' };
+				dialogConfig.colData = column;
+			} else {
+				dialogConfig.colData = colData;
+			}
+
 			// console.log(rowData[colData.field], colData.header);
 			this.openDialog(dialogConfig);
 		}
@@ -305,38 +348,36 @@ export class DataTableComponent<T> implements OnInit, OnDestroy {
 			modal: true,
 			dismissableMask: true,
 			data: {
+				config: dialogConfig,
 				// selectedRow: this.selectedRow ? this.selectedRow : '',
-				singleEntry: dialogConfig.singleEntry,
-				rowData: dialogConfig.rowData,
-				colData: dialogConfig.colData,
+
 				tableConfig: this.tableConfig
 			}
 		});
-		// if (this.dialogRef) {
-		// 	const instance = this.dialog.getInstance(this.dialogRef);
-		// 	console.log('Dialog instance data: ', instance.data);
-		// }
+
 		this.dialogRef.onClose.subscribe(resultObject => {
-			console.log('Receieved from dialog: ', resultObject);
-			if (
-				resultObject.confirmed &&
-				resultObject.rank &&
-				resultObject.rank === true
-			) {
-				this.openSelected('rank');
+			if (resultObject && resultObject.confirmed) {
+				console.log('Result Object: ', resultObject);
+
+				resultObject.rank
+					? this.openSelected('rank')
+					: resultObject.scores
+					? this.openSelected('scores')
+					: resultObject.playerDetails
+					? this.openSelected('playerDetails')
+					: console.log('No type in result object');
 			}
 		});
 	}
 
 	private openSelected(type) {
 		const options = {
-			rowSelected: this.rowSelected,
-			rank: type === 'rank' ? true : undefined,
-			scores: type === 'scores' ? true : undefined
+			type: type,
+			selectedRow: this.selectedRow,
+			selectedCell: this.selectedCell
 		};
-		// type === 'rank' ?
-		// this.rowSelected.emit(this.selectedRow): type === 'scores' ? this.rowSelected.emit(this.selectedRow,'rank')
-		// console.log('Open Selected Initiated');
+		console.log('Options to emit: ', options);
+		this.rowSelected.emit(options);
 	}
 
 	private setConfig() {
@@ -376,8 +417,21 @@ export class DataTableComponent<T> implements OnInit, OnDestroy {
 		}
 	}
 
+	setAllPlayers() {
+		if (this.tableConfig.dataTypeString === 'allPlayers') {
+			this.allPlayers = true;
+		}
+	}
+
 	ngOnDestroy(): void {
 		this.ngUnsubscribe.next();
 		this.ngUnsubscribe.complete();
+	}
+
+	isPlayer(colField: string): boolean {
+		if (colField === 'Giocatore' || colField === 'Giocatore1') {
+			return true;
+		}
+		return false;
 	}
 }

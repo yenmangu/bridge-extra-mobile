@@ -11,12 +11,13 @@
 		class="flex justify-content-center mb-3"
 		*ngIf="selectedSize">
 		<p-selectButton
-			[options]="constants.sizes"
+			[options]="sizes"
 			optionLabel="name"
 			optionValue="class"
-			[(ngModel)]="selectedSize.class"
+			[ngModel]="selectedSize.class"
 			[multiple]="false"
-			[unselectable]="true"></p-selectButton>
+			[unselectable]="true"
+			(ngModelChange)="changeSize($event)"></p-selectButton>
 	</div>
 	<div
 		pElement
@@ -89,7 +90,11 @@
 						*ngFor="let col of columns"
 						[pSortableColumn]="col.field"
 						[ngClass]="selectedSize.font">
-						{{ col.header | mapHeaders }}
+						{{
+							allPlayers && col.header === 'Giocatore'
+								? 'Player'
+								: (col.header | mapHeaders)
+						}}
 						<p-sortIcon [field]="col.field"></p-sortIcon>
 					</th>
 				</tr>
@@ -105,7 +110,9 @@
 						(mouseover)="onRowHover(rowData, col, true)"
 						(mouseout)="onRowHover(rowData, col, false)"
 						[pTooltip]="getTooltip(rowData)">
-						<ng-container *ngIf="tablesService.truncColumn(col.field)">
+						<ng-container
+							class="truncColumn"
+							*ngIf="tablesService.truncColumn(col.field)">
 							<div
 								class="inner"
 								[ngClass]="
@@ -121,7 +128,9 @@
 								{{ rowData[col.field] | removeDate | truncate : 26 }}
 							</div>
 						</ng-container>
-						<ng-container *ngIf="!tablesService.truncColumn(col.field)">
+						<ng-container
+							class="notTrunc"
+							*ngIf="!tablesService.truncColumn(col.field)">
 							<div
 								class="inner"
 								[ngClass]="
@@ -134,7 +143,23 @@
 								"
 								appClickHandler
 								(clickEvent)="handleClick($event, rowData, col)">
-								{{ rowData[col.field] }}
+								<span *ngIf="col.field === 'MP2'">
+									{{ rowData[col.field] | nullConversion }}
+								</span>
+								<span *ngIf="isPlayer(col.field)"
+									>{{ rowData[col.field] | removePlayerCode : true }}
+								</span>
+								<span *ngIf="col.field === 'Media'">
+									{{ rowData[col.field] | twoDecimalPlaces }}
+								</span>
+								<span
+									*ngIf="
+										!isPlayer(col.field) &&
+										col.field !== 'MP2' &&
+										col.field !== 'Media'
+									">
+									{{ rowData[col.field] }}
+								</span>
 							</div>
 						</ng-container>
 					</td>

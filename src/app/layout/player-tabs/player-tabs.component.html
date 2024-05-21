@@ -1,0 +1,46 @@
+<ng-container *ngIf="allPlayers">
+	<div class="flex flex-column justify-content-center align-items-center gap-2">
+		<ng-container *ngIf="!allPlayerData">
+			<p-progressSpinner
+				styleClass="w-4rem h-4rem"
+				strokeWidth="2"
+				ariaLabel="Data loading"></p-progressSpinner>
+			<span>Loading all players..</span>
+		</ng-container>
+	</div>
+
+	<ng-container *ngIf="allPlayerData">
+		<app-data-table
+			[tableConfig]="allPlayersTableConfig"
+			[tableData]="allPlayerData"
+			(rowSelected)="onReceiveData($event)"></app-data-table>
+	</ng-container>
+</ng-container>
+
+<ng-container *ngIf="!allPlayers">
+	<p-tabView (onChange)="onTabChange($event)">
+		<p-tabPanel header="Player Details">
+			<app-player-details [playerData]="playerDetails"></app-player-details>
+		</p-tabPanel>
+		<p-tabPanel header="General Recap">
+			<ng-container *ngIf="generalRecapData">
+				<app-recap
+					[recapData]="generalRecapData"
+					[customConfig]="customTableConfig"></app-recap>
+			</ng-container>
+		</p-tabPanel>
+		<p-tabPanel header="Month Recap">
+			<ng-container *ngIf="monthRecapData"> </ng-container>
+			<app-recap
+				[recapData]="monthRecapData"
+				[customConfig]="customTableConfig"></app-recap>
+		</p-tabPanel>
+		<p-tabPanel header="Partner Recap">
+			<ng-container *ngIf="partnerRecapData">
+				<app-recap
+					[recapData]="partnerRecapData"
+					[customConfig]="customTableConfig"></app-recap>
+			</ng-container>
+		</p-tabPanel>
+	</p-tabView>
+</ng-container>

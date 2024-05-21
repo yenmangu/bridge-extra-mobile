@@ -1,5 +1,6 @@
+<!-- DEV -->
 <app-data-table
-	*ngIf="winnersData.length"
-	[tableData]="winnersData"
+	*ngIf="tournamentDetails.length"
+	[tableData]="tournamentDetails"
 	[tableConfig]="tableConfig"
 	(rowSelected)="onReceiveRowData($event)"></app-data-table>

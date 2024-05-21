@@ -10,9 +10,9 @@ export class DialogConfigService {
 	public getheader(colHeader) {
 		switch (colHeader) {
 			case 'Giocatore':
-				return 'Player Information';
+				return 'View Player';
 			case 'Giocatore1':
-				return 'Player Information';
+				return 'View Player';
 			case 'circuito':
 				return 'Division Information';
 			case 'Torneo':

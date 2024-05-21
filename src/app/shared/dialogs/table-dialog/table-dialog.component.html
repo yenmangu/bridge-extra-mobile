@@ -2,23 +2,20 @@
 	class="flex flex-column justify-content-end p-3 gap-3"
 	*ngIf="dialogConfig.data">
 	<!-- Start ngSwitch/Case Containers -->
+	<ng-container *ngIf="showExtended">
+		<ng-container *ngTemplateOutlet="tournamentTemplate"></ng-container>
+	</ng-container>
+	<ng-container *ngIf="!showExtended">
+		<ng-container *ngTemplateOutlet="playerTemplate"></ng-container>
+	</ng-container>
+</div>
 
-	<ng-container [ngSwitch]="true">
-		<!-- Tournament Details Container -->
-		<!-- Used when selecting an entire tournament -->
-		<ng-container *ngSwitchCase="dialogConfig.data?.selectedRow !== undefined">
-			<h4>Tournament: {{ selectedRow.torneo }}</h4>
-			<span>Date: {{ selectedRow.Data }}</span>
-		</ng-container>
-		<!--  -->
-		<ng-container *ngSwitchCase="dialogConfig.data.singleEntry">
-			<ng-container *ngIf="rowData && colData">
-				<h3>
-					{{ colData.header | mapHeaders }} :
-					{{ rowData[colData.field] }}
-				</h3>
-			</ng-container>
-		</ng-container>
+<ng-template #tournamentTemplate>
+	<ng-container *ngIf="rowData && colData">
+		<h3>
+			{{ colData.header | mapHeaders }} : <br />
+			{{ rowData[colData.field] }}
+		</h3>
 	</ng-container>
 	<div class="flex flex-row gap-3">
 		<ng-container>
@@ -41,4 +38,27 @@
 			label="Back to list"
 			(click)="cancel()"></p-button>
 	</div>
-</div>
+</ng-template>
+
+<ng-template #playerTemplate>
+	<ng-container *ngIf="rowData && colData">
+		<h3>
+			<span *ngIf="!playerDialog">{{ colData.header | mapHeaders }} :</span>
+			<!-- <span *ngIf="playerDialog"></span> -->
+			<br />
+			{{
+				playerDialog && colData.header == 'Player'
+					? rowData['giocatore']
+					: (rowData[colData.header] | removePlayerCode : true)
+			}}
+		</h3>
+		<div class="flex flex-row gap-3">
+			<p-button
+				class="p-button-success"
+				severity="success"
+				label="Player Details"
+				(click)="closeWithConfirm('playerDetails')">
+			</p-button>
+		</div>
+	</ng-container>
+</ng-template>

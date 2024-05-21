@@ -31,6 +31,7 @@ export class HeaderComponent implements OnInit {
 			{ label: 'DB Test', routerLink: 'test' },
 			{ label: 'Tournaments', routerLink: 'tournaments' },
 			{ label: 'Winners', routerLink: 'winners' },
+			{ label: 'Players', routerLink: 'players' },
 			{
 				label: 'Division',
 				items: [{ label: 'BEX_1' }, { label: 'BEX_2' }, { label: 'BEX_3' }]

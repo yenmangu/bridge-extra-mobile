@@ -1,0 +1,8 @@
+<div class="flex flex-column gap-3">
+	<div class="profile"></div>
+	<ng-container *ngIf="recapData">
+		<app-data-table
+			[tableData]="recapData"
+			[tableConfig]="tableConfig"></app-data-table>
+	</ng-container>
+</div>
