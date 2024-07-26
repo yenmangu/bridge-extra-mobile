@@ -1,3 +1,3 @@
 export const environment = {
-	API_URL: 'https://api.velvet-oaks.co.uk/bex-db'
+	API_URL: 'https://api.ibescore.com/results'
 };

@@ -28,14 +28,14 @@ export class HeaderComponent implements OnInit {
 				icon: 'pi pi-home',
 				routerLink: '../'
 			},
-			{ label: 'DB Test', routerLink: 'test' },
+			// { label: 'DB Test', routerLink: 'test' },
 			{ label: 'Tournaments', routerLink: 'tournaments' },
 			{ label: 'Winners', routerLink: 'winners' },
-			{ label: 'Players', routerLink: 'players' },
-			{
-				label: 'Division',
-				items: [{ label: 'BEX_1' }, { label: 'BEX_2' }, { label: 'BEX_3' }]
-			}
+			{ label: 'Players', routerLink: 'players' }
+			// {
+			// 	label: 'Division',
+			// 	items: [{ label: 'BEX_1' }, { label: 'BEX_2' }, { label: 'BEX_3' }]
+			// }
 		];
 	}
 }

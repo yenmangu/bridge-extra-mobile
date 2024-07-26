@@ -1,4 +1,8 @@
-<div class="flex flex-column gap-3">
+<div class="flex flex-column gap-2">
+	<div class="flex flex-row justify-content-center gap-3">
+		<span class="player-name">{{ playerDetails.playerName }}</span>
+		<span class="player-code">{{ playerDetails.playerCode }}</span>
+	</div>
 	<div class="profile"></div>
 	<ng-container *ngIf="recapData">
 		<app-data-table

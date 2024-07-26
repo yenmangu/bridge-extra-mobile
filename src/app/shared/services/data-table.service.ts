@@ -29,6 +29,8 @@ export class DataTableService {
 	public assignHeaderColumns(tableData: any[], dataType?: string) {
 		const tableColumns = [];
 		Object.keys(tableData[0]).forEach((key, index) => {
+			// console.log('tableDate[0]: ', tableData[0]);
+
 			if (this.checkDataType(key, dataType)) {
 				const column: Column = {
 					field: key,
@@ -41,7 +43,10 @@ export class DataTableService {
 	}
 
 	private checkDataType(key: string, dataType: string): boolean {
-		if (dataType === 'TournamentDetails' && key === 'Torneo') {
+		if (
+			(dataType === 'TournamentDetails_scores' && key === 'Torneo') ||
+			(dataType === 'TournamentDetails_rank' && key === 'Torneo')
+		) {
 			return false;
 		}
 		return true;

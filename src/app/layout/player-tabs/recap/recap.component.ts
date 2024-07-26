@@ -22,6 +22,7 @@ import { baseTableConfig } from 'src/app/shared/data/base-table-config';
 export class RecapComponent implements OnInit, OnChanges, OnDestroy {
 	@Input() recapData;
 	@Input() customConfig;
+	@Input() playerDetails;
 	tableConfig: TableConfig = baseTableConfig;
 
 	constructor() {}

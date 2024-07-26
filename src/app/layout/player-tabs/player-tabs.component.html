@@ -25,6 +25,7 @@
 		<p-tabPanel header="General Recap">
 			<ng-container *ngIf="generalRecapData">
 				<app-recap
+					[playerDetails]="playerDetails"
 					[recapData]="generalRecapData"
 					[customConfig]="customTableConfig"></app-recap>
 			</ng-container>
@@ -32,12 +33,14 @@
 		<p-tabPanel header="Month Recap">
 			<ng-container *ngIf="monthRecapData"> </ng-container>
 			<app-recap
+				[playerDetails]="playerDetails"
 				[recapData]="monthRecapData"
 				[customConfig]="customTableConfig"></app-recap>
 		</p-tabPanel>
-		<p-tabPanel header="Partner Recap">
+		<p-tabPanel header="Partners Recap">
 			<ng-container *ngIf="partnerRecapData">
 				<app-recap
+					[playerDetails]="playerDetails"
 					[recapData]="partnerRecapData"
 					[customConfig]="customTableConfig"></app-recap>
 			</ng-container>

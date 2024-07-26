@@ -53,6 +53,11 @@ export class WinnersComponent implements OnInit {
 				const playerName: string = event.selectedCell.data;
 				console.log('Player name: ', playerName);
 				this.routingService.handlePlayerDetailsRouting(playerName);
+			} else {
+				this.routingService.handleTournamentRoute(
+					event.selectedCell.data,
+					event.type
+				);
 			}
 		} else {
 			console.error('Error reacting to event');

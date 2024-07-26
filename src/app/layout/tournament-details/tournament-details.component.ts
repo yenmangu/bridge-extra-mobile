@@ -54,14 +54,18 @@ export class TournamentDetailsComponent implements OnInit {
 		});
 
 		this.getTournamentDetails(this.tournamentId);
-		this.tableConfig = {
-			dataTypeString: 'TournamentDetails',
-			tableName: this.tournamentId,
-			visibleRows: 10,
-			rowsPerPage: [5, 10, 15, 20],
-			extraClasses: ['p-datatable-striped'],
-			minWidth: ''
-		};
+		if (this.routeData && this.routeData.type) {
+			this.tableConfig = {
+				dataTypeString: `TournamentDetails${
+					this.routeData.type === 'rank' ? '_rank' : '_scores'
+				}`,
+				tableName: this.tournamentId,
+				visibleRows: 10,
+				rowsPerPage: [5, 10, 15, 20],
+				extraClasses: ['p-datatable-striped'],
+				minWidth: ''
+			};
+		}
 	}
 
 	getTournamentDetails(selectedTournament: string) {

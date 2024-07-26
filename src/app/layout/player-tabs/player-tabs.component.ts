@@ -216,6 +216,10 @@ export class PlayerTabsComponent implements OnInit, OnDestroy {
 
 	onReceiveData(event) {
 		console.log('Event: ', event);
+		const playerName = `${event.selectedRow.codice}-${
+			event.selectedRow[event.selectedCell.header.toLowerCase()]
+		}`;
+		this.routingService.handlePlayerDetailsRouting(playerName);
 	}
 
 	getPlayerDetails() {

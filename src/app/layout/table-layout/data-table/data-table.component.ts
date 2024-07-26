@@ -235,6 +235,8 @@ export class DataTableComponent<T> implements OnInit, OnDestroy {
 	}
 
 	public handleClick(event: MouseEvent, rowData: T, colData: Column) {
+		console.log('ColData: ', colData);
+
 		if (
 			this.tablesService.areCellsClickable(
 				this.tableConfig.dataTypeString,
@@ -243,7 +245,7 @@ export class DataTableComponent<T> implements OnInit, OnDestroy {
 		) {
 			console.log('rowData: ', rowData);
 			this.selectedRow = rowData;
-			this.selectedCell = { header: colData.header, data: rowData[colData.header] };
+			this.selectedCell = { header: colData.header, data: rowData[colData.field] };
 			console.log('Testing header: ', colData.header);
 
 			const dialogConfig: any = {
